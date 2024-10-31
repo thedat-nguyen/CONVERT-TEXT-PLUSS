@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVERT TEXT</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Roboto', sans-serif;
+            transition: background-color 0.5s, color 0.5s;
+            /* Thêm hiệu ứng chuyển đổi */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            max-height: 600px;
+            border: 2px solid #ced4da;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 50px 30px 30px;
+            margin: auto;
+            transition: border-color 0.5s;
+            /* Thêm hiệu ứng chuyển đổi cho border */
+        }
+
+        .result {
+            white-space: pre-wrap;
+            min-height: 100px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+        .btn-group {
+            margin-bottom: 20px;
+        }
+
+        .dark-mode {
+            background-color: #343a40;
+            /* Màu nền tối */
+            color: #ffffff;
+            /* Màu chữ sáng */
+        }
+
+        .dark-mode .result {
+            background-color: #495057;
+            /* Màu nền cho khung kết quả */
+            border-color: #ced4da;
+            /* Màu border */
+        }
+
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #ffffff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .toggle-btn:hover {
+            background-color: #000000;
+            /* Màu khi hover */
+        }
+
+        #copyBtn {
+            background-color: #28a745;
+            /* Màu nền mặc định */
+            color: white;
+            /* Màu chữ */
+            border: none;
+            /* Bỏ đường viền */
+            border-radius: 5px;
+            /* Bo tròn góc */
+            padding: 10px 20px;
+            /* Thêm padding */
+            transition: background-color 0.3s, transform 0.3s;
+            /* Hiệu ứng chuyển đổi */
+        }
+
+        #copyBtn:hover {
+            background-color: #218838;
+            /* Màu nền khi hover */
+            transform: scale(1.05);
+            /* Tăng kích thước khi hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Hiệu ứng bóng */
+        }
+
+        #copyBtn:focus {
+            outline: none;
+            /* Bỏ đường viền focus */
+        }
+
+        /* Hiệu Ứng Chuột*/
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            /* Kích thước trái tim */
+            pointer-events: none;
+            /* Cho phép chuột đi qua trái tim */
+            transition: transform 0.2s;
+            /* Hiệu ứng chuyển động mượt mà */
+        }
+
+
+
+        /**/
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        .footer {
+            position: fixed;
+            /* Đặt vị trí của footer cố định */
+            bottom: -15px;
+            /* Dính sát đáy */
+            left: 0;
+            /* Dính sát bên trái */
+            right: 0;
+            /*
+            background-color: #000000;
+            font-size: 14px;
+            /* Kích thước chữ */
+            color: #666;
+            border-top: 1px solid #ccc;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            margin: 0;
+            /* Màu chữ */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="hearts-container"></div>
+
+    <button class="toggle-btn" id="toggleBtn">🌙</button>
+    <div class="container" id="borderContainer">
+        <h1 class="text-center mb-4" id="blink">CONVERT TEXT</h1>
+        <div class="form-group">
+            <label for="inputText" id="inputLabel">INPUT (Type "," Line Break)</label>
+            <textarea class="form-control" id="inputText" rows="3"></textarea>
+        </div>
+        <p id="selectLabel">SELECT</p>
+        <div class="d-flex justify-content-start align-items-center">
+            <div class="btn-group ml-3" id="caseSelect" data-toggle="buttons">
+                <label class="btn btn-secondary rounded">
+                    <input type="radio" name="options" id="uppercase" autocomplete="off"> AAA
+                </label>
+                <label class="btn btn-secondary mx-2 rounded">
+                    <input type="radio" name="options" id="lowercase" autocomplete="off"> aaa
+                </label>
+                <label class="btn btn-secondary mr-2 rounded">
+                    <input type="radio" name="options" id="capitalize" autocomplete="off"> Aaa
+                </label>
+                <label class="btn btn-secondary rounded">
+                    <input type="radio" name="options" id="titlecase" autocomplete="off"> Aaa Aaa
+                </label>
+            </div>
+        </div>
+        <label for="resultText" id="outputLabel">OUTPUT</label>
+        <div class="result border p-3" id="resultText"></div>
+        <button class="btn btn-success mt-2" id="copyBtn" style="display:none;"
+            onclick="copyToClipboard()">COPPY</button>
+    </div>
+
+    <footer class="footer text-center mt-4">
+        <p>Design & Develop by © thedat-nguyen</p>
+    </footer>
+
+    <script>
+        // Hàm tạo màu sắc ngẫu nhiên
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // Thay đổi màu sắc border mỗi 500ms
+        function changeBorderColor() {
+            const borderContainer = document.getElementById('borderContainer');
+            setInterval(() => {
+                borderContainer.style.borderColor = getRandomColor();
+            }, 500);
+        }
+
+        // Gọi hàm thay đổi màu sắc
+        changeBorderColor();
+
+        // Hàm chuyển đổi chế độ tối
+        function toggleDarkMode() {
+            const body = document.body;
+            const container = document.getElementById('borderContainer');
+            body.classList.toggle('dark-mode');
+            container.classList.toggle('dark-mode');
+        }
+
+        // Thêm sự kiện cho nút chuyển đổi chế độ
+        document.getElementById('toggleBtn').addEventListener('click', toggleDarkMode);
+
+        // Hàm chuyển đổi kiểu chữ
+        function convertText() {
+            const inputText = document.getElementById('inputText').value;
+            const isUppercase = document.getElementById('uppercase').checked;
+            const isLowercase = document.getElementById('lowercase').checked;
+            const isCapitalize = document.getElementById('capitalize').checked;
+            const isTitleCase = document.getElementById('titlecase').checked;
+            let result;
+
+            if (inputText.trim() === '') {
+                document.getElementById('resultText').textContent = '';
+                document.getElementById('copyBtn').style.display = 'none';
+                return;
+            }
+
+            if (isUppercase) {
+                result = inputText.split(',').map(item => item.trim().toUpperCase()).join('\n');
+            } else if (isLowercase) {
+                result = inputText.split(',').map(item => item.trim().toLowerCase()).join('\n');
+            } else if (isCapitalize) {
+                result = inputText.split(',').map(item => {
+                    item = item.trim();
+                    return item.charAt(0).toUpperCase() + item.slice(1).toLowerCase();
+                }).join('\n');
+            } else if (isTitleCase) {
+                result = inputText.split(',').map(item => {
+                    return item.trim().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+                }).join('\n');
+            }
+
+            const resultTextElement = document.getElementById('resultText');
+            resultTextElement.textContent = result;
+            document.getElementById('copyBtn').style.display = 'block';
+        }
+
+        // Thêm sự kiện cho các nút chọn kiểu chuyển đổi
+        document.getElementById('inputText').addEventListener('input', convertText);
+        document.querySelectorAll('input[name="options"]').forEach(input => {
+            input.addEventListener('change', function () {
+                document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('btn-primary', 'btn-success', 'btn-info', 'btn-warning'));
+                this.parentElement.classList.add('btn-info');
+                convertText();
+            });
+        });
+
+        // Hàm sao chép nội dung
+        function copyToClipboard() {
+            const resultText = document.getElementById('resultText').textContent;
+            if (resultText.trim() === '') {
+                showAlert("Lỗi!", "Không có nội dung để sao chép!", "error");
+                return;
+            }
+            navigator.clipboard.writeText(resultText).then(() => {
+                showAlert("Thành công!", "Đã sao chép vào clipboard!", "success");
+            }, (err) => {
+                console.error('Không thể sao chép: ', err);
+            });
+        }
+
+        // Hiển thị thông báo
+        function showAlert(title, text, icon) {
+            Swal.fire({
+                icon: icon,
+                title: title,
+                text: text,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+            });
+        }
+
+        // Hiệu ứng nhấp nháy cho chữ tiêu đề
+        function toSpans(span) {
+            const str = span.firstChild.data;
+            const a = str.length;
+            span.removeChild(span.firstChild);
+            for (let i = 0; i < a; i++) {
+                const theSpan = document.createElement("SPAN");
+                theSpan.appendChild(document.createTextNode(str.charAt(i)));
+                span.appendChild(theSpan);
+            }
+        }
+
+        function RainbowSpan(span, hue, deg, brt, spd, hspd) {
+            this.deg = deg || 360;
+            this.hue = hue || 0;
+            this.hspd = hspd || 3;
+            this.length = span.firstChild.data.length;
+            this.span = span;
+            this.speed = spd || 50;
+            this.hInc = this.deg / this.length;
+            this.brt = brt || 255;
+            this.timer = null;
+            toSpans(span);
+            this.moveRainbow();
+        }
+
+        RainbowSpan.prototype.moveRainbow = function () {
+            if (this.hue > 359) this.hue -= 360;
+            let color, red, grn, blu;
+            let h = this.hue;
+
+            for (let i = 0; i < this.length; i++) {
+                if (h > 359) h -= 360;
+                const b = this.brt;
+                if (h < 60) { color = Math.floor((h / 60) * b); red = b; grn = color; blu = 0; }
+                else if (h < 120) { color = Math.floor(((h - 60) / 60) * b); red = b - color; grn = b; blu = 0; }
+                else if (h < 180) { color = Math.floor(((h - 120) / 60) * b); red = 0; grn = b; blu = color; }
+                else if (h < 240) { color = Math.floor(((h - 180) / 60) * b); red = 0; grn = b - color; blu = b; }
+                else if (h < 300) { color = Math.floor(((h - 240) / 60) * b); red = color; grn = 0; blu = b; }
+                else { color = Math.floor(((h - 300) / 60) * b); red = b; grn = 0; blu = b - color; }
+
+                h += this.hInc;
+                this.span.childNodes[i].style.color = `rgb(${red}, ${grn}, ${blu})`;
+            }
+            this.hue += this.hspd;
+        }
+
+        const r1 = document.getElementById("blink");
+        const myRainbowSpan = new RainbowSpan(r1, 0, 360, 255, 50, 18);
+        myRainbowSpan.timer = window.setInterval(() => myRainbowSpan.moveRainbow(), myRainbowSpan.speed);
+
+        // Thêm hiệu ứng nhấp nháy cho label và select
+        const inputLabel = document.getElementById("inputLabel");
+        const outputLabel = document.getElementById("outputLabel");
+        const selectLabel = document.getElementById("selectLabel");
+
+        const myRainbowInputLabel = new RainbowSpan(inputLabel, 0, 360, 255, 50, 18);
+        myRainbowInputLabel.timer = window.setInterval(() => myRainbowInputLabel.moveRainbow(), myRainbowInputLabel.speed);
+
+        const myRainbowOutputLabel = new RainbowSpan(outputLabel, 0, 360, 255, 50, 18);
+        myRainbowOutputLabel.timer = window.setInterval(() => myRainbowOutputLabel.moveRainbow(), myRainbowOutputLabel.speed);
+
+        const myRainbowSelectLabel = new RainbowSpan(selectLabel, 0, 360, 255, 50, 18);
+        myRainbowSelectLabel.timer = window.setInterval(() => myRainbowSelectLabel.moveRainbow(), myRainbowSelectLabel.speed);
+
+
+        // Hiệu Ứng Chuột 
+        document.addEventListener('mousemove', (e) => {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = '💕'; // Thêm biểu tượng trái tim
+            document.getElementById('hearts-container').appendChild(heart);
+
+            heart.style.left = `${e.pageX}px`; // Đặt vị trí trái tim theo chuột
+            heart.style.top = `${e.pageY}px`; // Đặt vị trí trái tim theo chuột
+
+            // Thêm hiệu ứng bay lên
+            heart.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                heart.style.transform = 'translateY(0)';
+            }, 200); // Quay về vị trí ban đầu sau 200ms
+
+            // Xóa trái tim sau khi hoàn tất hiệu ứng
+            setTimeout(() => {
+                heart.remove();
+            }, 1000); // Thời gian tồn tại của trái tim
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>
